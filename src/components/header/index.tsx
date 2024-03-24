@@ -1,4 +1,6 @@
-import { Home, Pizza, UtensilsCrossed } from "lucide-react";
+import { Home, UtensilsCrossed } from "lucide-react";
+
+import Logo from "@/assets/logo";
 
 import NavLink from "./nav-link";
 import AccountMenu from "../account-menu";
@@ -9,7 +11,7 @@ export default function Header() {
   return (
     <div className="border-bottom">
       <div className="flex items-center h-16 gap-6 px-6 border-b-[1px]">
-        <Pizza className="w-6 h-6" />
+        <Logo className="w-8 h-8" />
         <Separator orientation="vertical" className="h-6" />
 
         <nav className="flex items-center space-x-4 lg:space-x-6">

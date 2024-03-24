@@ -9,7 +9,7 @@ export default function NavLink({ to: linkTo, ...props }: NavLinkProps) {
     <Link
       to={linkTo}
       data-active={pathname === linkTo}
-      className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground data-[active=true]:text-foreground"
+      className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground data-[active=true]:text-primary data-[active=true]:font-semibold"
       {...props}
     />
   );
