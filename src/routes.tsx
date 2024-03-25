@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 
-import { App } from "@/App";
-
+import NotFoundPage from "./pages/404";
 import AppLayout from "./pages/_layouts/app";
 import AuthLayout from "./pages/_layouts/auth";
 import DashBoardPage from "./pages/app/dashboard/dashboard-page";
@@ -13,6 +12,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <AppLayout />,
+    errorElement: <NotFoundPage />,
     children: [
       { path: "/", element: <DashBoardPage /> },
       { path: "/orders", element: <Orders /> },
@@ -27,6 +27,4 @@ export const router = createBrowserRouter([
       { path: "/sign-up", element: <SignUp /> },
     ],
   },
-
-  { path: "*", element: <App /> },
 ]);
