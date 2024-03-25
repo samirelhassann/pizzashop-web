@@ -2,8 +2,8 @@ import { Helmet } from "react-helmet-async";
 
 import Pagination from "@/components/pagination/pagination";
 
-import OrderTableFilters from "./order-table-filters";
-import OrdersTable from "./orders-table";
+import OrderTableFilters from "./components/order-table-filters";
+import OrdersTable from "./components/orders-table";
 
 export default function Orders() {
   return (

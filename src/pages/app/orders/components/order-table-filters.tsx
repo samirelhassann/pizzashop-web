@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { useTableFilter } from "./hooks/use-table-filter";
+import { useTableFilter } from "../hooks/use-table-filter";
 
 export default function OrderTableFilters() {
   const { statusFilterOptions, defaultStatusFilter } = useTableFilter();
