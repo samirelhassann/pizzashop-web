@@ -1,3 +1,4 @@
+import { useMutation } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
@@ -7,6 +8,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { signInService } from "@/services/sign-in-service";
 
 const signInForm = z.object({
   email: z.string().email(),
@@ -22,16 +24,16 @@ export default function SignIn() {
     watch,
   } = useForm<SignInForm>();
 
+  const { mutateAsync: authenticate } = useMutation({
+    mutationFn: signInService,
+  });
+
   const emailInput = watch("email");
 
   const isButtonDisabled = !emailInput || isSubmitting;
 
   const handleSignIn = async (data: SignInForm) => {
-    // eslint-disable-next-line no-console
-    console.log("• [LOG] - data", data);
-
-    // eslint-disable-next-line no-promise-executor-return
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await authenticate({ email: data.email });
 
     toast.success("Welcome back! 🎉");
   };
