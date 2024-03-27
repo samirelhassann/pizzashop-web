@@ -1,7 +1,10 @@
+import { useMutation } from "@tanstack/react-query";
 import { UseFormHandleSubmit, UseFormRegister, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { z } from "zod";
+
+import { signupService } from "@/services/sign-up-service";
 
 const signUpForm = z.object({
   partnerName: z.string(),
@@ -29,15 +32,37 @@ export function useSignUp(): UseSignUpProps {
   } = useForm<SignUpForm>();
   const navigate = useNavigate();
 
+  const { mutateAsync: signUpService } = useMutation({
+    mutationFn: signupService,
+  });
+
   const emailInput = watch("email");
 
   const isButtonDisabled = !emailInput || isSubmitting;
 
-  // eslint-disable-next-line unused-imports/no-unused-vars, @typescript-eslint/no-unused-vars
-  const handleSignUp = async (_data: SignUpForm) => {
-    toast.success("Welcome back! 🎉");
+  const handleSignUp = async ({
+    email,
+    managerName,
+    partnerName,
+    phone,
+  }: SignUpForm) => {
+    try {
+      signUpService({
+        email,
+        managerName,
+        restaurantName: partnerName,
+        phone,
+      });
 
-    navigate("/sign-in");
+      toast.success("Restaurante succesfully registered 🎉", {
+        action: {
+          label: "Login",
+          onClick: () => navigate(`/sign-in?email=${email}`),
+        },
+      });
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    }
   };
 
   return {
