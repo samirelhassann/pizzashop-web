@@ -3,7 +3,7 @@ import { Home, UtensilsCrossed } from "lucide-react";
 import Logo from "@/assets/logo";
 
 import NavLink from "./nav-link";
-import AccountMenu from "../account-menu";
+import AccountMenu from "../account-menu/account-menu";
 import { ThemeToggle } from "../theme/theme-toggle";
 import { Separator } from "../ui/separator";
 
@@ -28,6 +28,7 @@ export default function Header() {
 
         <div className="flex items-center gap-2 ml-auto">
           <AccountMenu />
+
           <ThemeToggle />
         </div>
       </div>

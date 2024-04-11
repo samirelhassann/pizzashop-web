@@ -2,16 +2,66 @@ import { ArrowRight, Search, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { Order } from "@/services/get-orders/get-order-service-response";
 
+import { useOrderTable } from "./hooks/useOrderTable";
 import OrderDetails from "./order-details";
 import OrderStatus from "./order-status";
 
-export default function OrderTableRow() {
+export function OrderTableRowLoading() {
   return (
     <TableRow>
       <TableCell>
-        <Dialog>
+        <Skeleton className="w-8 h-8 rounded-md" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-24 h-6 rounded-md" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-24 h-6 rounded-md" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-24 h-6 rounded-md" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="h-6 rounded-md w-52" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-24 h-6 rounded-md" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-24 h-6 rounded-md" />
+      </TableCell>
+      <TableCell>
+        <Skeleton className="w-24 h-6 rounded-md" />
+      </TableCell>
+    </TableRow>
+  );
+}
+
+interface OrderTableRowProps {
+  order: Order;
+}
+
+export default function OrderTableRow({ order }: OrderTableRowProps) {
+  const {
+    isDetailsOpen,
+    isOrderCancellationAllowed,
+    setIsDetailsOpen,
+    formatedCreatedAt,
+    formatedPrice,
+  } = useOrderTable({
+    order,
+  });
+
+  const { orderId, status, customerName } = order;
+
+  return (
+    <TableRow>
+      <TableCell>
+        <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="xs">
               <Search className="w-3 h-3" />
@@ -19,16 +69,18 @@ export default function OrderTableRow() {
             </Button>
           </DialogTrigger>
 
-          <OrderDetails />
+          <OrderDetails orderId={orderId} isOpen={isDetailsOpen} />
         </Dialog>
       </TableCell>
-      <TableCell className="font-mono text-sm font-medium">3113321</TableCell>
-      <TableCell className="text-muted-foreground">15 minutes ago</TableCell>
-      <TableCell>
-        <OrderStatus status="Pending" />
+      <TableCell className="font-mono text-sm font-medium">{orderId}</TableCell>
+      <TableCell className="text-muted-foreground">
+        {formatedCreatedAt}
       </TableCell>
-      <TableCell className="font-medium">Samir El Hassan</TableCell>
-      <TableCell className="font-medium">R$ 149,90</TableCell>
+      <TableCell>
+        <OrderStatus status={status} />
+      </TableCell>
+      <TableCell className="font-medium">{customerName}</TableCell>
+      <TableCell className="font-medium">{formatedPrice}</TableCell>
       <TableCell>
         <Button variant="outline" size="xs">
           <ArrowRight className="w-3 h-3 mr-2" />
@@ -36,7 +88,11 @@ export default function OrderTableRow() {
         </Button>
       </TableCell>
       <TableCell>
-        <Button variant="ghost" size="xs">
+        <Button
+          disabled={!isOrderCancellationAllowed}
+          variant="ghost"
+          size="xs"
+        >
           <X className="w-3 h-3 mr-2" />
           Cancel
         </Button>

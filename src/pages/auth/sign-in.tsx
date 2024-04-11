@@ -1,4 +1,3 @@
-import { useMutation } from "@tanstack/react-query";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { Link, useSearchParams } from "react-router-dom";
@@ -8,7 +7,7 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { signInService } from "@/services/sign-in-service";
+import { useProfileQueries } from "@/queries/profile-queries";
 
 const signInForm = z.object({
   email: z.string().email(),
@@ -18,6 +17,7 @@ type SignInForm = z.infer<typeof signInForm>;
 
 export default function SignIn() {
   const [searchParams] = useSearchParams();
+  const { useSignIn } = useProfileQueries();
 
   const {
     register,
@@ -30,9 +30,7 @@ export default function SignIn() {
     },
   });
 
-  const { mutateAsync: authenticate } = useMutation({
-    mutationFn: signInService,
-  });
+  const { mutateAsync: authenticate } = useSignIn();
 
   const emailInput = watch("email");
 

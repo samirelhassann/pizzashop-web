@@ -1,4 +1,6 @@
 import { DialogTitle } from "@radix-ui/react-dialog";
+import { useQuery } from "@tanstack/react-query";
+import { formatDistanceToNow } from "date-fns";
 import { ClipboardCopyIcon, Mail, PhoneCall } from "lucide-react";
 import { toast } from "sonner";
 
@@ -13,10 +15,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getOrderDetailsService } from "@/services/get-order-details/get-order-details-service";
 
 import OrderStatus from "./order-status";
 
-export default function OrderDetails() {
+interface OrderDetailsProps {
+  orderId: string;
+  isOpen: boolean;
+}
+
+export default function OrderDetails({ orderId, isOpen }: OrderDetailsProps) {
+  const { data: orderDetails } = useQuery({
+    queryKey: ["order-detail", orderId],
+    queryFn: () => getOrderDetailsService({ orderId }),
+    enabled: isOpen,
+  });
+
+  if (!orderDetails) {
+    return null;
+  }
+
+  const { status, createdAt, customer, id, orderItems, totalInCents } =
+    orderDetails;
+
+  const formatedDate = formatDistanceToNow(new Date(createdAt), {
+    addSuffix: true,
+  });
+
   const handleCopyToClipboard = async (value: string, label?: string) => {
     await navigator.clipboard.writeText(value);
 
@@ -28,7 +53,7 @@ export default function OrderDetails() {
   return (
     <DialogContent>
       <DialogHeader>
-        <DialogTitle className="text-muted-foreground">Order: 123</DialogTitle>
+        <DialogTitle className="text-muted-foreground">{id}</DialogTitle>
       </DialogHeader>
 
       <div className="space-y-12">
@@ -37,37 +62,41 @@ export default function OrderDetails() {
             <TableRow>
               <TableCell className="text-muted-foreground">Status</TableCell>
               <TableCell>
-                <OrderStatus status="Pending" />
+                <OrderStatus status={status} />
               </TableCell>
             </TableRow>
 
             <TableRow>
               <TableCell className="text-muted-foreground">Client</TableCell>
-              <TableCell>Samir El Hassan</TableCell>
+              <TableCell>{customer.name}</TableCell>
             </TableRow>
 
             <TableRow>
               <TableCell className="text-muted-foreground">Cellphone</TableCell>
               <TableCell>
                 <div className="flex items-center">
-                  <span className="font-mono">+55 11 99999-9999</span>
+                  <span className="font-mono">{customer.phone}</span>
 
-                  <Button
-                    variant="ghost"
-                    size="xs"
-                    className="p-2 ml-2"
-                    onClick={() => handleCopyToClipboard("+5511999999999")}
-                  >
-                    <ClipboardCopyIcon className="w-4 h-4" />
-                    <span className="sr-only">Copy to clipboard</span>
-                  </Button>
+                  {!!customer.phone && (
+                    <>
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        className="p-2 ml-2"
+                        onClick={() => handleCopyToClipboard(customer.phone!)}
+                      >
+                        <ClipboardCopyIcon className="w-4 h-4" />
+                        <span className="sr-only">Copy to clipboard</span>
+                      </Button>
 
-                  <a href="tel:+5511999999999">
-                    <Button variant="ghost" size="xs" className="p-2">
-                      <PhoneCall className="w-4 h-4" />
-                      <span className="sr-only">Call</span>
-                    </Button>
-                  </a>
+                      <a href="tel:+5511999999999">
+                        <Button variant="ghost" size="xs" className="p-2">
+                          <PhoneCall className="w-4 h-4" />
+                          <span className="sr-only">Call</span>
+                        </Button>
+                      </a>
+                    </>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
@@ -76,7 +105,7 @@ export default function OrderDetails() {
               <TableCell className="text-muted-foreground">Email</TableCell>
               <TableCell>
                 <div className="flex items-center">
-                  <span className="font-mono">samirelhassann@gmail.com</span>
+                  <span className="font-mono">{customer.email}</span>
 
                   <Button
                     variant="ghost"
@@ -105,7 +134,7 @@ export default function OrderDetails() {
                 Created At
               </TableCell>
               <TableCell>
-                <span>15 minutes ago</span>
+                <span>{formatedDate}</span>
               </TableCell>
             </TableRow>
           </TableBody>
@@ -122,23 +151,34 @@ export default function OrderDetails() {
           </TableHeader>
 
           <TableBody>
-            <TableRow>
-              <TableCell>Pizza Pepperoni Grande</TableCell>
-              <TableCell className="text-right">2</TableCell>
-              <TableCell className="text-right">69,90</TableCell>
-              <TableCell className="text-right">139,80</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Pizza Pepperoni Grande</TableCell>
-              <TableCell className="text-right">2</TableCell>
-              <TableCell className="text-right">69,90</TableCell>
-              <TableCell className="text-right">139,80</TableCell>
-            </TableRow>
+            {orderItems.map((item) => (
+              <TableRow key={item.id}>
+                <TableCell>{item.product.name}</TableCell>
+                <TableCell className="text-right">{item.quantity}</TableCell>
+                <TableCell className="text-right">
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(item.priceInCents / 100)}
+                </TableCell>
+                <TableCell className="text-right">
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format((item.priceInCents / 100) * item.quantity)}
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
           <TableFooter>
             <TableRow>
               <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className="text-right">279,60</TableCell>
+              <TableCell className="text-right">
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(totalInCents / 100)}
+              </TableCell>
             </TableRow>
           </TableFooter>
         </Table>

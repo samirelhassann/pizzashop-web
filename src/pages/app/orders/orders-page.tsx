@@ -19,7 +19,7 @@ export default function Orders() {
           <OrdersTable />
         </div>
 
-        <Pagination pageIndex={0} totalCount={100} perPage={10} />
+        <Pagination />
       </div>
     </>
   );

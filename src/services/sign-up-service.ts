@@ -1,6 +1,6 @@
 import { api } from "@/lib/axios";
 
-interface SignupServiceProps {
+export interface SignupServiceProps {
   restaurantName: string;
   managerName: string;
   email: string;
