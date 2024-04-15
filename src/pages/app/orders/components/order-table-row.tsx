@@ -52,6 +52,8 @@ export default function OrderTableRow({ order }: OrderTableRowProps) {
     setIsDetailsOpen,
     formatedCreatedAt,
     formatedPrice,
+    handleCancelOrder,
+    orderAction,
   } = useOrderTable({
     order,
   });
@@ -82,16 +84,26 @@ export default function OrderTableRow({ order }: OrderTableRowProps) {
       <TableCell className="font-medium">{customerName}</TableCell>
       <TableCell className="font-medium">{formatedPrice}</TableCell>
       <TableCell>
-        <Button variant="outline" size="xs">
-          <ArrowRight className="w-3 h-3 mr-2" />
-          Approve
-        </Button>
+        {orderAction && (
+          <Button
+            variant="outline"
+            size="xs"
+            onClick={orderAction?.handler}
+            disabled={orderAction?.isPending}
+            isLoading={orderAction?.isPending}
+            className="w-28"
+          >
+            <ArrowRight className="w-3 h-3 mr-2" />
+            {orderAction?.label}
+          </Button>
+        )}
       </TableCell>
       <TableCell>
         <Button
           disabled={!isOrderCancellationAllowed}
           variant="ghost"
           size="xs"
+          onClick={handleCancelOrder}
         >
           <X className="w-3 h-3 mr-2" />
           Cancel
